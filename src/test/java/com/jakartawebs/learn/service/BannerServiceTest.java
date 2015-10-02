@@ -4,20 +4,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.testng.annotations.Test;
 
-import com.jakartawebs.learn.entity.BannerRepository;
 import com.jakartawebs.learn.LearningApplication;
 import com.jakartawebs.learn.entity.Banner;
 import com.jakartawebs.learn.entity.Banner.Position;
+import com.jakartawebs.learn.entity.BannerRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes=LearningApplication.class)
+@Transactional
 public class BannerServiceTest {
 	@Autowired
 	private BannerService bannerService;
@@ -26,7 +28,7 @@ public class BannerServiceTest {
 	private BannerRepository bannerRepository;
 	
 	@Before
-	public void initBanners() {
+	public void preloadBanners() {
 		List<Position> positions = Arrays.asList(Position.HOME);
 		bannerService.createBanner(positions);
 	}
@@ -35,11 +37,12 @@ public class BannerServiceTest {
 	public void testCreateBanner() {
 		List<Position> positions = Arrays.asList(Position.HOME, Position.BENEFIT);
 		bannerService.createBanner(positions);
-		Assert.isTrue(bannerRepository.count() == 1);
+		Assert.isTrue(bannerRepository.count() == 2);
 	}
 	
 	@Test
 	public void testRetrieveBanners() {
-		Iterable<Banner> banners = bannerService.getBanners();
+		List<Banner> banners = bannerService.getBanners();
+		Assert.isTrue(banners.size() == 1);
 	}
 }
